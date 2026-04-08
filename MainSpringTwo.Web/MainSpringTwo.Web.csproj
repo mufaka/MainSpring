@@ -17,6 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.5" />
   </ItemGroup>
 
   <Target Name="NpmInstall" BeforeTargets="BuildCSS" Inputs="package.json" Outputs="node_modules/.package-lock.json">

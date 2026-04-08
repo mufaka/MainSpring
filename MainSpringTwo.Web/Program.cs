@@ -15,6 +15,8 @@ namespace MainSpringTwo.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSystemd();
+
             var pluginRegistry = new PluginRegistry();
             pluginRegistry.Register(new SamplePlugin());
 
