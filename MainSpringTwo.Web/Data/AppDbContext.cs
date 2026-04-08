@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MainSpringTwo.Web.Data
 {
@@ -21,6 +22,15 @@ namespace MainSpringTwo.Web.Data
         public DbSet<ApplicationConfiguration> ApplicationConfigurations => Set<ApplicationConfiguration>();
 
         public DbSet<JobHistory> JobHistories => Set<JobHistory>();
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<DateTime>()
+                .HaveConversion<UtcDateTimeConverter>();
+
+            configurationBuilder.Properties<DateTime?>()
+                .HaveConversion<NullableUtcDateTimeConverter>();
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -71,6 +81,26 @@ namespace MainSpringTwo.Web.Data
                     .HasForeignKey(x => x.ScheduledJobId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+        }
+    }
+
+    internal class UtcDateTimeConverter : ValueConverter<DateTime, DateTime>
+    {
+        public UtcDateTimeConverter()
+            : base(
+                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+        {
+        }
+    }
+
+    internal class NullableUtcDateTimeConverter : ValueConverter<DateTime?, DateTime?>
+    {
+        public NullableUtcDateTimeConverter()
+            : base(
+                v => v.HasValue ? (v.Value.Kind == DateTimeKind.Utc ? v : v.Value.ToUniversalTime()) : v,
+                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v)
+        {
         }
     }
 }

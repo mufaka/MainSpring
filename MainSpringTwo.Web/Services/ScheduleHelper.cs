@@ -4,12 +4,18 @@ namespace MainSpringTwo.Web.Services
 {
     public static class ScheduleHelper
     {
-        public static bool ShouldRun(ScheduledJob job, DateTime now)
+        public static DateTime? ComputeNextRunTime(ScheduledJob job, DateTime? afterTime = null)
         {
-            var normalizedNow = Normalize(now);
-            var nextRun = GetNextRunTime(job, normalizedNow);
+            if (!job.IsActive)
+            {
+                return null;
+            }
 
-            return nextRun.HasValue && nextRun.Value == normalizedNow;
+            var fromTime = afterTime.HasValue
+                ? Normalize(afterTime.Value).AddMinutes(1)
+                : job.StartTime;
+
+            return GetNextRunTime(job, fromTime);
         }
 
         public static DateTime? GetNextRunTime(ScheduledJob job, DateTime fromTime)
@@ -105,9 +111,12 @@ namespace MainSpringTwo.Web.Services
 
         private static DateTime Normalize(DateTime value)
         {
-            var utc = value.Kind == DateTimeKind.Utc
-                ? value
-                : value.ToUniversalTime();
+            var utc = value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
+                _ => value.ToUniversalTime()
+            };
 
             return new DateTime(utc.Year, utc.Month, utc.Day, utc.Hour, utc.Minute, 0, DateTimeKind.Utc);
         }

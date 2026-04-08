@@ -7,7 +7,7 @@
     @Html.AntiForgeryToken()
 </form>
 
-<form asp-action="Edit" asp-route-id="@Model.ScheduledJob.ScheduledJobId" method="post" class="space-y-8">
+<form id="scheduled-job-form" asp-action="Edit" asp-route-id="@Model.ScheduledJob.ScheduledJobId" method="post" class="space-y-8">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
             <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">Scheduled jobs</p>

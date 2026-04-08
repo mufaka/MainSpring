@@ -7,113 +7,104 @@ namespace MainSpringTwo.Tests;
 public class ScheduleHelperTests
 {
     [Fact]
-    public void ShouldRun_ReturnsTrue_ForMinutelyJobAtExactInterval()
+    public void ComputeNextRunTime_ReturnsStartTime_ForNewJob()
     {
         var startTime = new DateTime(2026, 4, 8, 12, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Minute, 5);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddMinutes(5));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job);
 
-        Assert.True(shouldRun);
+        Assert.Equal(startTime, nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsFalse_ForMinutelyJobOffInterval()
+    public void ComputeNextRunTime_AdvancesForMinutelyJob()
     {
         var startTime = new DateTime(2026, 4, 8, 12, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Minute, 5);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddMinutes(3));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime);
 
-        Assert.False(shouldRun);
+        Assert.Equal(startTime.AddMinutes(5), nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsTrue_ForHourlyJobAtInterval()
+    public void ComputeNextRunTime_AdvancesForHourlyJob()
     {
         var startTime = new DateTime(2026, 4, 8, 0, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Hour, 2);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddHours(2));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime);
 
-        Assert.True(shouldRun);
+        Assert.Equal(startTime.AddHours(2), nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsFalse_ForHourlyJobOffInterval()
-    {
-        var startTime = new DateTime(2026, 4, 8, 0, 0, 0, DateTimeKind.Utc);
-        var job = CreateJob(startTime, ScheduleType.Hour, 2);
-
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddHours(1));
-
-        Assert.False(shouldRun);
-    }
-
-    [Fact]
-    public void ShouldRun_ReturnsTrue_ForDailyJobAtInterval()
+    public void ComputeNextRunTime_AdvancesForDailyJob()
     {
         var startTime = new DateTime(2026, 4, 8, 8, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Day, 1);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddDays(1));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime);
 
-        Assert.True(shouldRun);
+        Assert.Equal(startTime.AddDays(1), nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsTrue_ForWeeklyJobAtInterval()
+    public void ComputeNextRunTime_AdvancesForWeeklyJob()
     {
         var startTime = new DateTime(2026, 4, 6, 9, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Week, 1);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddDays(7));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime);
 
-        Assert.True(shouldRun);
+        Assert.Equal(startTime.AddDays(7), nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsTrue_ForMonthlyJobOnMatchingDay()
+    public void ComputeNextRunTime_AdvancesForMonthlyJob()
     {
         var startTime = new DateTime(2026, 1, 15, 10, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Month, 1);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, new DateTime(2026, 2, 15, 10, 0, 0, DateTimeKind.Utc));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime);
 
-        Assert.True(shouldRun);
+        Assert.Equal(new DateTime(2026, 2, 15, 10, 0, 0, DateTimeKind.Utc), nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsTrue_ForMonthlyJobEndOfMonthFallback()
+    public void ComputeNextRunTime_HandlesMonthlyEndOfMonthFallback()
     {
         var startTime = new DateTime(2026, 1, 31, 9, 30, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Month, 1);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, new DateTime(2026, 2, 28, 9, 30, 0, DateTimeKind.Utc));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime);
 
-        Assert.True(shouldRun);
+        Assert.Equal(new DateTime(2026, 2, 28, 9, 30, 0, DateTimeKind.Utc), nextRun);
     }
 
     [Fact]
-    public void ShouldRun_ReturnsFalse_ForMonthlyJobWrongDay()
-    {
-        var startTime = new DateTime(2026, 1, 15, 10, 0, 0, DateTimeKind.Utc);
-        var job = CreateJob(startTime, ScheduleType.Month, 1);
-
-        var shouldRun = ScheduleHelper.ShouldRun(job, new DateTime(2026, 2, 16, 10, 0, 0, DateTimeKind.Utc));
-
-        Assert.False(shouldRun);
-    }
-
-    [Fact]
-    public void ShouldRun_ReturnsFalse_ForInactiveJob()
+    public void ComputeNextRunTime_ReturnsNull_ForInactiveJob()
     {
         var startTime = new DateTime(2026, 4, 8, 12, 0, 0, DateTimeKind.Utc);
         var job = CreateJob(startTime, ScheduleType.Minute, 5, isActive: false);
 
-        var shouldRun = ScheduleHelper.ShouldRun(job, startTime.AddMinutes(5));
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job);
 
-        Assert.False(shouldRun);
+        Assert.Null(nextRun);
+    }
+
+    [Fact]
+    public void ComputeNextRunTime_SkipsToCorrectInterval_WhenRunTimeMissed()
+    {
+        var startTime = new DateTime(2026, 4, 8, 12, 0, 0, DateTimeKind.Utc);
+        var job = CreateJob(startTime, ScheduleType.Minute, 5);
+
+        // Job ran at start, then the next several ticks were missed.
+        // afterTime at 12:13 should advance to 12:15 (the next aligned interval).
+        var nextRun = ScheduleHelper.ComputeNextRunTime(job, startTime.AddMinutes(13));
+
+        Assert.Equal(startTime.AddMinutes(15), nextRun);
     }
 
     [Fact]

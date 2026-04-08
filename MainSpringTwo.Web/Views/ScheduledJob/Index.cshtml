@@ -53,7 +53,7 @@
                             </div>
                             <div>
                                 <dt class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Next run</dt>
-                                <dd class="mt-1">@(ScheduleHelper.GetNextRunTime(job, DateTime.UtcNow)?.ToLocalTime().ToString("g") ?? "Not scheduled")</dd>
+                                <dd class="mt-1">@(job.NextRunTime?.ToLocalTime().ToString("g") ?? "Not scheduled")</dd>
                             </div>
                             <div>
                                 <dt class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Starts</dt>
@@ -103,7 +103,7 @@
                                     <p>@ScheduleSummary(job)</p>
                                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Starts @job.StartTime.ToLocalTime().ToString("g")</p>
                                 </td>
-                                <td class="px-6 py-4 align-top text-sm text-slate-600 dark:text-slate-300">@(ScheduleHelper.GetNextRunTime(job, DateTime.UtcNow)?.ToLocalTime().ToString("g") ?? "Not scheduled")</td>
+                                <td class="px-6 py-4 align-top text-sm text-slate-600 dark:text-slate-300">@(job.NextRunTime?.ToLocalTime().ToString("g") ?? "Not scheduled")</td>
                                 <td class="px-6 py-4 align-top text-sm"><span class="inline-flex rounded-full px-3 py-1 text-xs font-medium @(job.IsActive ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300" : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300")">@(job.IsActive ? "Active" : "Inactive")</span></td>
                                 <td class="px-6 py-4 align-top">
                                     <div class="flex flex-wrap justify-end gap-2">

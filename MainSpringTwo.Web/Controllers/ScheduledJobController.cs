@@ -62,6 +62,13 @@ namespace MainSpringTwo.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<PartialViewResult> PluginConfigurationSection(ScheduledJobViewModel model)
+        {
+            await PopulateViewModelAsync(model);
+            return PartialView("_PluginConfigurationSection", model);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ScheduledJobViewModel model)
@@ -79,6 +86,7 @@ namespace MainSpringTwo.Web.Controllers
 
             var now = DateTime.UtcNow;
             model.ScheduledJob.StartTime = NormalizeToUtc(model.ScheduledJob.StartTime);
+            model.ScheduledJob.NextRunTime = ScheduleHelper.ComputeNextRunTime(model.ScheduledJob);
             model.ScheduledJob.InsertDate = now;
             model.ScheduledJob.UpdateDate = now;
 
@@ -151,6 +159,12 @@ namespace MainSpringTwo.Web.Controllers
             }
 
             var now = DateTime.UtcNow;
+            var scheduleChanged =
+                existingJob.ScheduleType != model.ScheduledJob.ScheduleType ||
+                existingJob.Interval != model.ScheduledJob.Interval ||
+                existingJob.StartTime != NormalizeToUtc(model.ScheduledJob.StartTime) ||
+                existingJob.IsActive != model.ScheduledJob.IsActive;
+
             existingJob.Name = model.ScheduledJob.Name.Trim();
             existingJob.PluginId = model.ScheduledJob.PluginId;
             existingJob.ScheduleType = model.ScheduledJob.ScheduleType;
@@ -158,6 +172,11 @@ namespace MainSpringTwo.Web.Controllers
             existingJob.StartTime = NormalizeToUtc(model.ScheduledJob.StartTime);
             existingJob.IsActive = model.ScheduledJob.IsActive;
             existingJob.UpdateDate = now;
+
+            if (scheduleChanged)
+            {
+                existingJob.NextRunTime = ScheduleHelper.ComputeNextRunTime(existingJob);
+            }
 
             try
             {

@@ -22,19 +22,41 @@ namespace MainSpringTwo.Web.Jobs
         public async Task ExecuteAsync()
         {
             var now = DateTime.UtcNow;
-            var activeJobs = await _db.ScheduledJobs
-                .Where(j => j.IsActive)
+
+            await BackfillNextRunTimeAsync(now);
+
+            var dueJobs = await _db.ScheduledJobs
+                .Where(j => j.IsActive && j.NextRunTime.HasValue && j.NextRunTime.Value <= now)
                 .Include(j => j.Plugin)
                 .Include(j => j.ConfigurationValues)
                 .ToListAsync(CancellationToken.None);
 
-            foreach (var job in activeJobs)
+            foreach (var job in dueJobs)
             {
-                if (ScheduleHelper.ShouldRun(job, now))
-                {
-                    await RunJobAsync(job, now, CancellationToken.None);
-                }
+                await RunJobAsync(job, now, CancellationToken.None);
+
+                job.NextRunTime = ScheduleHelper.ComputeNextRunTime(job, now);
+                await _db.SaveChangesAsync(CancellationToken.None);
             }
+        }
+
+        private async Task BackfillNextRunTimeAsync(DateTime now)
+        {
+            var unscheduledJobs = await _db.ScheduledJobs
+                .Where(j => j.IsActive && !j.NextRunTime.HasValue)
+                .ToListAsync(CancellationToken.None);
+
+            if (unscheduledJobs.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var job in unscheduledJobs)
+            {
+                job.NextRunTime = ScheduleHelper.ComputeNextRunTime(job);
+            }
+
+            await _db.SaveChangesAsync(CancellationToken.None);
         }
 
         public async Task RunSingleJobAsync(int scheduledJobId)
