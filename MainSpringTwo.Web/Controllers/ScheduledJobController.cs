@@ -65,6 +65,27 @@ namespace MainSpringTwo.Web.Controllers
         [HttpGet]
         public async Task<PartialViewResult> PluginConfigurationSection(ScheduledJobViewModel model)
         {
+            if (model.ScheduledJob.ScheduledJobId > 0)
+            {
+                var persistedValues = await _db.ConfigurationValues
+                    .AsNoTracking()
+                    .Where(value => value.ScheduledJobId == model.ScheduledJob.ScheduledJobId)
+                    .ToListAsync();
+
+                var formNames = model.ConfigurationValues
+                    .Select(value => value.ParameterName)
+                    .Where(name => !string.IsNullOrEmpty(name))
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var persisted in persistedValues)
+                {
+                    if (!formNames.Contains(persisted.ParameterName))
+                    {
+                        model.ConfigurationValues.Add(persisted);
+                    }
+                }
+            }
+
             await PopulateViewModelAsync(model);
             return PartialView("_PluginConfigurationSection", model);
         }
