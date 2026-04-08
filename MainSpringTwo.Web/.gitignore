@@ -1,1 +1,4 @@
 ﻿node_modules/
+mainspring.db
+mainspring.db-shm
+mainspring.db-wal
