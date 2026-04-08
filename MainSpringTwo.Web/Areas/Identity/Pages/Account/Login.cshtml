@@ -1,0 +1,45 @@
+﻿@page
+@model MainSpringTwo.Web.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<form method="post" class="space-y-6">
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <div class="space-y-2">
+        <p class="text-sm text-slate-600 dark:text-slate-300">Use the seeded administrator account or any registered operator account to continue.</p>
+        <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200"></div>
+    </div>
+
+    <div class="space-y-5">
+        <div>
+            <label asp-for="Input.UserNameOrEmail" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200"></label>
+            <input asp-for="Input.UserNameOrEmail" class="block w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-900/80 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-500/20" autocomplete="username" />
+            <span asp-validation-for="Input.UserNameOrEmail" class="mt-2 block text-sm text-rose-600 dark:text-rose-300"></span>
+        </div>
+        <div>
+            <label asp-for="Input.Password" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200"></label>
+            <input asp-for="Input.Password" class="block w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-900/80 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-500/20" autocomplete="current-password" />
+            <span asp-validation-for="Input.Password" class="mt-2 block text-sm text-rose-600 dark:text-rose-300"></span>
+        </div>
+        <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300">
+            <input asp-for="Input.RememberMe" class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
+            <span>Keep me signed in on this device</span>
+        </label>
+    </div>
+
+    <button type="submit" class="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+        Sign in
+    </button>
+
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300">
+        <p class="font-medium text-slate-900 dark:text-white">Need a new account?</p>
+        <p class="mt-1">Create an operator profile to access the dashboard.</p>
+        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="mt-3 inline-flex items-center text-sm font-medium text-sky-700 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200">Register a new account</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

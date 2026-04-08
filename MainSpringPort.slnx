@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MainSpringTwo.Tests/MainSpringTwo.Tests.csproj" />
+  <Project Path="MainSpringTwo.Web/MainSpringTwo.Web.csproj" />
+</Solution>

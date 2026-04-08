@@ -1,0 +1,13 @@
+﻿@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    /* extend with project tokens later */
+}
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+}

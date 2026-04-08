@@ -1,0 +1,91 @@
+﻿@model JobHistoryIndexViewModel
+@{
+    ViewData["Title"] = "Job History";
+}
+
+<div class="space-y-8">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">Operational logs</p>
+            <h1 class="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Job history</h1>
+            <p class="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Review the last seven days of executions with filtering and pagination.</p>
+        </div>
+
+        <form method="get" class="flex flex-wrap items-center gap-3 rounded-3xl border border-slate-200/70 bg-white/85 p-3 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-950/70">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200" asp-for="FilterScheduledJobId">Filter by job</label>
+            <select asp-for="FilterScheduledJobId" asp-items="Model.ScheduledJobOptions" class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-900/80 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-500/20">
+                <option value="">All jobs</option>
+            </select>
+            <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">Apply</button>
+        </form>
+    </div>
+
+    <div class="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white/85 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-950/70">
+        <div class="border-b border-slate-200/70 px-6 py-5 dark:border-white/10">
+            <h2 class="text-lg font-semibold text-slate-950 dark:text-white">Recent execution entries</h2>
+        </div>
+
+        @if (Model.Entries.Count == 0)
+        {
+            <div class="px-6 py-10 text-center text-sm text-slate-600 dark:text-slate-300">No history entries matched the selected filter in the last seven days.</div>
+        }
+        else
+        {
+            <div class="space-y-4 px-4 py-4 lg:hidden">
+                @foreach (var entry in Model.Entries)
+                {
+                    <article class="rounded-3xl border p-5 @(entry.IsError ? "border-rose-200 bg-rose-50/70 dark:border-rose-500/20 dark:bg-rose-900/20" : "border-slate-200 bg-slate-50/80 dark:border-white/10 dark:bg-slate-900/70")">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-base font-semibold text-slate-950 dark:text-white">@(entry.ScheduledJob?.Name ?? "Scheduled job")</h3>
+                                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">@entry.Message</p>
+                            </div>
+                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium @(entry.IsError ? "bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300")">@(entry.IsError ? "Error" : "Success")</span>
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+                            <span>@entry.RunTime.ToLocalTime().ToString("g")</span>
+                            <a asp-action="Details" asp-route-id="@entry.JobHistoryId" class="font-medium text-sky-700 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200">View details</a>
+                        </div>
+                    </article>
+                }
+            </div>
+
+            <div class="hidden overflow-x-auto lg:block">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-white/10">
+                    <thead class="bg-slate-50/80 dark:bg-slate-900/80">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Run time</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Job</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Message</th>
+                            <th class="px-6 py-4"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+                        @foreach (var entry in Model.Entries)
+                        {
+                            <tr class="@(entry.IsError ? "bg-rose-50 dark:bg-rose-900/20" : string.Empty)">
+                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">@entry.RunTime.ToLocalTime().ToString("g")</td>
+                                <td class="px-6 py-4 text-sm font-medium text-slate-950 dark:text-white">@(entry.ScheduledJob?.Name ?? "Scheduled job")</td>
+                                <td class="px-6 py-4 text-sm"><span class="inline-flex rounded-full px-3 py-1 text-xs font-medium @(entry.IsError ? "bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300")">@(entry.IsError ? "Error" : "Success")</span></td>
+                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">@entry.Message</td>
+                                <td class="px-6 py-4 text-right">
+                                    <a asp-action="Details" asp-route-id="@entry.JobHistoryId" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <div class="flex items-center justify-between gap-3 border-t border-slate-200/70 px-6 py-4 dark:border-white/10">
+            <p class="text-sm text-slate-600 dark:text-slate-300">Page @Model.Page of @Model.TotalPages</p>
+            <div class="flex gap-2">
+                <a asp-action="Index" asp-route-page="@(Model.Page - 1)" asp-route-scheduledJobId="@Model.FilterScheduledJobId" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:pointer-events-none dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 @(Model.Page <= 1 ? "pointer-events-none opacity-50" : string.Empty)">Previous</a>
+                <a asp-action="Index" asp-route-page="@(Model.Page + 1)" asp-route-scheduledJobId="@Model.FilterScheduledJobId" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 @(Model.Page >= Model.TotalPages ? "pointer-events-none opacity-50" : string.Empty)">Next</a>
+            </div>
+        </div>
+    </div>
+</div>

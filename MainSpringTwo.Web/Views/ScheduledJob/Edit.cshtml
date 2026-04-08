@@ -1,0 +1,35 @@
+﻿@model ScheduledJobViewModel
+@{
+    ViewData["Title"] = $"Edit {Model.ScheduledJob.Name}";
+}
+
+<form id="run-now-form" asp-action="RunNow" asp-route-id="@Model.ScheduledJob.ScheduledJobId" method="post">
+    @Html.AntiForgeryToken()
+</form>
+
+<form asp-action="Edit" asp-route-id="@Model.ScheduledJob.ScheduledJobId" method="post" class="space-y-8">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">Scheduled jobs</p>
+            <h1 class="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Edit @Model.ScheduledJob.Name</h1>
+            <p class="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Update the schedule, activation state, and inline plugin configuration values.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <button type="submit" form="run-now-form" class="inline-flex items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-700 transition hover:bg-sky-100 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200 dark:hover:bg-sky-500/20">Run now</button>
+            <a asp-action="Details" asp-route-id="@Model.ScheduledJob.ScheduledJobId" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800">View details</a>
+        </div>
+    </div>
+
+    @Html.HiddenFor(model => model.ScheduledJob.ScheduledJobId)
+    @Html.HiddenFor(model => model.ScheduledJob.InsertDate)
+    <partial name="_Form" model="Model" />
+
+    <div class="flex flex-wrap items-center gap-3">
+        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-sky-500">Save changes</button>
+        <a asp-action="Index" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

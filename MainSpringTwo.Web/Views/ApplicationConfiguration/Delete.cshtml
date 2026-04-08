@@ -1,0 +1,37 @@
+﻿@model ApplicationConfiguration
+@{
+    ViewData["Title"] = $"Delete {Model.ConfigurationName}";
+}
+
+<div class="space-y-8">
+    <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-rose-600 dark:text-rose-300">Danger zone</p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Delete @Model.ConfigurationName</h1>
+        <p class="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300">This permanently removes the configuration entry and its value.</p>
+    </div>
+
+    <section class="rounded-[2rem] border border-rose-200 bg-white/85 p-6 shadow-sm backdrop-blur dark:border-rose-500/20 dark:bg-slate-950/70">
+        <dl class="grid gap-6 md:grid-cols-3">
+            <div>
+                <dt class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Category</dt>
+                <dd class="mt-2 text-base font-medium text-slate-950 dark:text-white">@Model.CategoryName</dd>
+            </div>
+            <div>
+                <dt class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Name</dt>
+                <dd class="mt-2 text-base font-medium text-slate-950 dark:text-white">@Model.ConfigurationName</dd>
+            </div>
+            <div>
+                <dt class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Value</dt>
+                <dd class="mt-2 text-base font-medium text-slate-950 dark:text-white">@(string.IsNullOrWhiteSpace(Model.ConfigurationValue) ? "(empty)" : Model.ConfigurationValue)</dd>
+            </div>
+        </dl>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+            <form asp-action="Delete" asp-route-id="@Model.ApplicationConfigurationId" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-rose-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-rose-500">Delete entry</button>
+            </form>
+            <a asp-action="Index" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800">Cancel</a>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,23 @@
+﻿@model ApplicationConfiguration
+@{
+    ViewData["Title"] = "Create configuration";
+}
+
+<form asp-action="Create" method="post" class="space-y-8">
+    <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">Application configuration</p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Create a configuration entry</h1>
+        <p class="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Store application-level values such as logging retention or operational feature switches.</p>
+    </div>
+
+    <partial name="_ConfigurationForm" model="Model" />
+
+    <div class="flex flex-wrap items-center gap-3">
+        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-sky-500">Create entry</button>
+        <a asp-action="Index" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

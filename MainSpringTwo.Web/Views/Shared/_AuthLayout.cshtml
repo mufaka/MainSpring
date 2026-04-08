@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="h-full" x-data="{ darkMode: localStorage.getItem('dark') === 'true' }"
+      x-init="$watch('darkMode', value => { localStorage.setItem('dark', value); document.documentElement.classList.toggle('dark', value); }); document.documentElement.classList.toggle('dark', darkMode)"
+      :class="{ 'dark': darkMode }">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MainSpring</title>
+    <link rel="stylesheet" href="~/css/app.min.css" asp-append-version="true" />
+</head>
+<body class="min-h-full bg-slate-950 text-slate-900 antialiased dark:text-slate-100">
+    <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.28),_transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(99,102,241,0.2),_transparent_28%),linear-gradient(180deg,_#f8fafc_0%,_#e2e8f0_100%)] dark:bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.15),_transparent_28%),radial-gradient(circle_at_bottom_left,_rgba(99,102,241,0.12),_transparent_24%),linear-gradient(180deg,_#020617_0%,_#0f172a_100%)]"></div>
+
+    <div class="mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-6 py-12 lg:flex-row lg:items-center lg:gap-16">
+        <div class="max-w-xl lg:flex-1">
+            <a asp-controller="Home" asp-action="Index" class="inline-flex items-center gap-3 rounded-full border border-white/60 bg-white/70 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-200">
+                <span class="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-500 font-semibold tracking-[0.25em] text-white">MS</span>
+                MainSpring Control Center
+            </a>
+            <p class="mt-8 text-sm font-semibold uppercase tracking-[0.35em] text-sky-600 dark:text-sky-300">Identity</p>
+            <h1 class="mt-4 text-4xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-5xl">Secure access for operators and administrators.</h1>
+            <p class="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300">
+                Sign in to operate schedules, inspect history, and manage configuration from a single polished workspace.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-300">
+                <span class="rounded-full border border-slate-200 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-slate-900/70">ASP.NET Core Identity</span>
+                <span class="rounded-full border border-slate-200 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-slate-900/70">SQLite-backed accounts</span>
+                <span class="rounded-full border border-slate-200 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-slate-900/70">Dark mode aware</span>
+            </div>
+        </div>
+
+        <main class="w-full max-w-md lg:flex-1">
+            <div class="overflow-hidden rounded-[2rem] border border-white/60 bg-white/85 p-8 shadow-2xl shadow-slate-950/15 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/80 dark:shadow-black/40">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">MainSpring</p>
+                        <h2 class="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">@ViewData["Title"]</h2>
+                    </div>
+                    <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 dark:border-white/10 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white" @@click="darkMode = !darkMode">
+                        <span class="sr-only">Toggle dark mode</span>
+                        <svg x-show="!darkMode" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m0 15V21m9-9h-1.5M4.5 12H3m15.364 6.364-1.06-1.06M6.697 6.697 5.636 5.636m12.728 0-1.06 1.06M6.697 17.303l-1.06 1.06M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        <svg x-show="darkMode" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0 1 18 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.266-2.597.748-3.752a9.753 9.753 0 1 0 12.754 12.754Z" /></svg>
+                    </button>
+                </div>
+
+                @await Html.PartialAsync("_Toast")
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,69 @@
+﻿@model List<PluginCatalogItemViewModel>
+@{
+    ViewData["Title"] = "Plugins";
+}
+
+<div class="space-y-8">
+    <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">Plugin catalog</p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Compiled plugin registry</h1>
+        <p class="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300">Plugins are deployed with the application. Use this view to inspect registered capabilities and parameter metadata.</p>
+    </div>
+
+    <div class="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white/85 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-950/70">
+        <div class="flex items-center justify-between gap-4 border-b border-slate-200/70 px-6 py-5 dark:border-white/10">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-950 dark:text-white">Registered plugins</h2>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Each row reflects a compiled plugin plus persisted metadata stored in the application database.</p>
+            </div>
+            <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300">@Model.Count plugin(s)</span>
+        </div>
+
+        <div class="space-y-4 px-4 py-4 lg:hidden">
+            @foreach (var plugin in Model)
+            {
+                <article class="rounded-3xl border border-slate-200 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-slate-900/70">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-950 dark:text-white">@plugin.Name</h3>
+                            <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">@plugin.Description</p>
+                        </div>
+                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium @(plugin.IsActive ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300" : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300")">@(plugin.IsActive ? "Active" : "Inactive")</span>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
+                        <span>@plugin.ParameterCount parameter(s)</span>
+                        <a asp-action="Details" asp-route-name="@plugin.Name" class="font-medium text-sky-700 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200">View details</a>
+                    </div>
+                </article>
+            }
+        </div>
+
+        <div class="hidden overflow-x-auto lg:block">
+            <table class="min-w-full divide-y divide-slate-200 dark:divide-white/10">
+                <thead class="bg-slate-50/80 dark:bg-slate-900/80">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Name</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Description</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Parameters</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Status</th>
+                        <th class="px-6 py-4"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-white/10">
+                    @foreach (var plugin in Model)
+                    {
+                        <tr>
+                            <td class="px-6 py-4 text-sm font-medium text-slate-950 dark:text-white">@plugin.Name</td>
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">@plugin.Description</td>
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">@plugin.ParameterCount</td>
+                            <td class="px-6 py-4 text-sm"><span class="inline-flex rounded-full px-3 py-1 text-xs font-medium @(plugin.IsActive ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300" : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300")">@(plugin.IsActive ? "Active" : "Inactive")</span></td>
+                            <td class="px-6 py-4 text-right">
+                                <a asp-action="Details" asp-route-name="@plugin.Name" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
