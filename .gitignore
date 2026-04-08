@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/MainSpringTwo.Web/mainspring.db
+/MainSpringTwo.Web/mainspring.db-shm
+/MainSpringTwo.Web/mainspring.db-wal
