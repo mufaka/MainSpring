@@ -8,6 +8,7 @@
         DateTime = 4,
         Password = 5,
         Text = 6,
-        Boolean = 7
+        Boolean = 7,
+        List = 8
     }
 }

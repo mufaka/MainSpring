@@ -100,12 +100,23 @@
                     var dateValue = DateTime.TryParse(normalizedValue, out var parsedDate)
                         ? (parsedDate.Kind == DateTimeKind.Utc ? parsedDate.ToLocalTime() : parsedDate).ToString("yyyy-MM-ddTHH:mm")
                         : string.Empty;
+                    var fieldKey = $"ConfigurationValues[{i}].Value";
+                    var fieldErrors = ViewData.ModelState.TryGetValue(fieldKey, out var fieldState)
+                        ? fieldState.Errors
+                            .Select(error => error.ErrorMessage)
+                            .Where(message => !string.IsNullOrWhiteSpace(message))
+                            .ToList()
+                        : [];
 
                     <div class="rounded-3xl border border-slate-200 bg-slate-50/70 p-5 dark:border-white/10 dark:bg-slate-900/60">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-sm font-semibold text-slate-950 dark:text-white">@parameter.Name</p>
                                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">@parameter.Description</p>
+                                @if (parameter.DataType == MainSpringTwo.Web.Models.Plugins.ParameterDataType.List && parameter.Options.Count > 0)
+                                {
+                                    <p class="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Options: @string.Join(", ", parameter.Options.Select(option => string.IsNullOrWhiteSpace(option.Label) ? option.Value : option.Label))</p>
+                                }
                             </div>
                             <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 dark:border-white/10 dark:bg-slate-950 dark:text-slate-300">@parameter.DataType</span>
                         </div>
@@ -150,9 +161,36 @@
                             {
                                 <input name="ConfigurationValues[@i].Value" type="password" value="@normalizedValue" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-950/80 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-500/20" />
                             }
+                            else if (parameter.DataType == MainSpringTwo.Web.Models.Plugins.ParameterDataType.List)
+                            {
+                                <select name="ConfigurationValues[@i].Value" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-950/80 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-500/20">
+                                    <option value="">Select an option</option>
+                                    @foreach (var option in parameter.Options)
+                                    {
+                                        if (string.Equals(normalizedValue, option.Value, StringComparison.Ordinal))
+                                        {
+                                            <option value="@option.Value" selected> @(string.IsNullOrWhiteSpace(option.Label) ? option.Value : option.Label)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@option.Value">@(string.IsNullOrWhiteSpace(option.Label) ? option.Value : option.Label)</option>
+                                        }
+                                    }
+                                </select>
+                            }
                             else
                             {
                                 <input name="ConfigurationValues[@i].Value" type="text" value="@normalizedValue" class="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-white/10 dark:bg-slate-950/80 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-500/20" />
+                            }
+
+                            @if (fieldErrors.Count > 0)
+                            {
+                                <div class="mt-2 space-y-1">
+                                    @foreach (var error in fieldErrors)
+                                    {
+                                        <p class="text-sm text-rose-600 dark:text-rose-300">@error</p>
+                                    }
+                                </div>
                             }
                         </div>
                     </div>

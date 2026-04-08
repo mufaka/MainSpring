@@ -119,9 +119,8 @@ public class ScheduleHelperTests
     [Fact]
     public void PluginRegistry_ReturnsRegisteredSamplePluginByName()
     {
-        var registry = new PluginRegistry();
         var plugin = new SamplePlugin();
-        registry.Register(plugin);
+        var registry = new PluginRegistry([plugin]);
 
         var fromName = registry.GetByName("Sample");
         var all = registry.GetAll();

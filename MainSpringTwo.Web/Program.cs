@@ -1,5 +1,6 @@
 ﻿using MainSpringTwo.Web.Data;
 using MainSpringTwo.Web.Jobs;
+using MainSpringTwo.Web.Models.Plugins;
 using MainSpringTwo.Web.Plugins;
 using MainSpringTwo.Web.Services;
 using Hangfire;
@@ -17,15 +18,15 @@ namespace MainSpringTwo.Web
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.UseSystemd();
 
-            var pluginRegistry = new PluginRegistry();
-            pluginRegistry.Register(new SamplePlugin());
-
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddHttpClient();
             builder.Services.AddHangfire(config => config.UseInMemoryStorage());
             builder.Services.AddHangfireServer();
-            builder.Services.AddSingleton(pluginRegistry);
+            builder.Services.AddSingleton<IPlugin, GenericHttpRequestPlugin>();
+            builder.Services.AddSingleton<IPlugin, SamplePlugin>();
+            builder.Services.AddSingleton<PluginRegistry>();
             builder.Services.AddScoped<PluginExecutorJob>();
             builder.Services.AddScoped<LogPruningJob>();
 

@@ -330,6 +330,7 @@ namespace MainSpringTwo.Web.Controllers
 
             model.ScheduledJob.Name = model.ScheduledJob.Name?.Trim() ?? string.Empty;
             NormalizeConfigurationValues(model.ConfigurationValues, plugin.ConfigurationParameters);
+            ValidateConfigurationValues(model.ConfigurationValues, plugin.ConfigurationParameters);
 
             return plugin;
         }
@@ -346,10 +347,46 @@ namespace MainSpringTwo.Web.Controllers
                 }
 
                 value.ParameterName = parameter.Name;
-                value.Value = parameter.DataType == ParameterDataType.Boolean
-                    ? string.Equals(value.Value, "true", StringComparison.OrdinalIgnoreCase).ToString().ToLowerInvariant()
-                    : value.Value?.Trim() ?? string.Empty;
+                value.Value = NormalizeConfigurationValue(parameter, value.Value);
             }
+        }
+
+        private void ValidateConfigurationValues(List<ConfigurationValue> values, List<PluginParameter> parameters)
+        {
+            for (var i = 0; i < parameters.Count; i++)
+            {
+                var parameter = parameters[i];
+                var value = values.ElementAtOrDefault(i)?.Value ?? string.Empty;
+
+                if (parameter.DataType == ParameterDataType.List &&
+                    !string.IsNullOrWhiteSpace(value) &&
+                    !parameter.Options.Any(option => string.Equals(option.Value, value, StringComparison.Ordinal)))
+                {
+                    ModelState.AddModelError($"ConfigurationValues[{i}].Value", $"Select a valid value for {parameter.Name}.");
+                }
+            }
+        }
+
+        private static string NormalizeConfigurationValue(PluginParameter parameter, string? value)
+        {
+            var normalizedValue = value?.Trim() ?? string.Empty;
+
+            if (parameter.DataType == ParameterDataType.Boolean)
+            {
+                return string.Equals(normalizedValue, "true", StringComparison.OrdinalIgnoreCase)
+                    .ToString()
+                    .ToLowerInvariant();
+            }
+
+            if (parameter.DataType == ParameterDataType.List)
+            {
+                var selectedOption = parameter.Options.FirstOrDefault(option =>
+                    string.Equals(option.Value, normalizedValue, StringComparison.OrdinalIgnoreCase));
+
+                return selectedOption?.Value ?? normalizedValue;
+            }
+
+            return normalizedValue;
         }
 
         private async Task ReplaceConfigurationValuesAsync(
@@ -375,9 +412,7 @@ namespace MainSpringTwo.Web.Controllers
                 {
                     ScheduledJobId = scheduledJob.ScheduledJobId,
                     ParameterName = parameter.Name,
-                    Value = parameter.DataType == ParameterDataType.Boolean
-                        ? string.Equals(normalizedValue, "true", StringComparison.OrdinalIgnoreCase).ToString().ToLowerInvariant()
-                        : normalizedValue,
+                    Value = NormalizeConfigurationValue(parameter, normalizedValue),
                     InsertDate = timestamp,
                     UpdateDate = timestamp
                 };

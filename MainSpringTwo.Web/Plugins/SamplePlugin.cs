@@ -30,6 +30,25 @@ namespace MainSpringTwo.Web.Plugins
             },
             new()
             {
+                Name = "Environment",
+                Description = "Target environment used by the sample plugin.",
+                DataType = ParameterDataType.List,
+                Options =
+                [
+                    new()
+                    {
+                        Value = "sandbox",
+                        Label = "Sandbox"
+                    },
+                    new()
+                    {
+                        Value = "production",
+                        Label = "Production"
+                    }
+                ]
+            },
+            new()
+            {
                 Name = "Notes",
                 Description = "Additional operator notes for the run.",
                 DataType = ParameterDataType.Text
@@ -46,7 +65,7 @@ namespace MainSpringTwo.Web.Plugins
                     new PluginLogEntry
                     {
                         IsError = false,
-                        Message = "Hello from SamplePlugin"
+                        Message = $"Hello from SamplePlugin ({configuration.GetValueOrDefault("Environment", "sandbox")})"
                     }
                 ]
             });

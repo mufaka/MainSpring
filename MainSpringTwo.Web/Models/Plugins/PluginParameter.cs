@@ -7,5 +7,7 @@
         public string Description { get; init; } = string.Empty;
 
         public ParameterDataType DataType { get; init; } = ParameterDataType.String;
+
+        public List<PluginParameterOption> Options { get; init; } = [];
     }
 }

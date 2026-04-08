@@ -6,6 +6,14 @@ namespace MainSpringTwo.Web.Services
     {
         private readonly Dictionary<string, IPlugin> _plugins = new(StringComparer.OrdinalIgnoreCase);
 
+        public PluginRegistry(IEnumerable<IPlugin>? plugins = null)
+        {
+            foreach (var plugin in plugins ?? [])
+            {
+                Register(plugin);
+            }
+        }
+
         public void Register(IPlugin plugin)
         {
             _plugins[plugin.Name] = plugin;

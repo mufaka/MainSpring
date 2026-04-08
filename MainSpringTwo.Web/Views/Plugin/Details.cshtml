@@ -52,7 +52,13 @@
                         {
                             <tr>
                                 <td class="px-6 py-4 text-sm font-medium text-slate-950 dark:text-white">@parameter.Name</td>
-                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">@parameter.Description</td>
+                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                    <div>@parameter.Description</div>
+                                    @if (parameter.DataType == MainSpringTwo.Web.Models.Plugins.ParameterDataType.List && parameter.Options.Count > 0)
+                                    {
+                                        <div class="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Options: @string.Join(", ", parameter.Options.Select(option => string.IsNullOrWhiteSpace(option.Label) ? option.Value : option.Label))</div>
+                                    }
+                                </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">@parameter.DataType</td>
                             </tr>
                         }
