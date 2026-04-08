@@ -30,19 +30,11 @@ namespace MainSpringTwo.Web
             builder.Services.AddScoped<PluginExecutorJob>();
             builder.Services.AddScoped<LogPruningJob>();
 
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-                })
-                .AddIdentityCookies();
-
-            builder.Services.AddIdentityCore<IdentityUser>(options =>
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                 })
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<AppDbContext>();
 
             builder.Services.AddControllersWithViews(options =>
             {
